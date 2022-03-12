@@ -13,6 +13,18 @@
 
 
 <div class="row">
+    @if (\Illuminate\Support\Facades\Session::has('warning'))
+        <div class="col-12">
+            <div class="alert alert-warning">
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+                <strong>
+                    {{ \Illuminate\Support\Facades\Session::get('warning') }}
+                </strong>
+            </div>
+        </div>
+    @endif
     <div class="col-lg-12 col-md-12">
         <div class="card">
 {{--            <div class="header">--}}
@@ -71,30 +83,23 @@
     <?php endif ?>
     @foreach($question as $q)
 
-        @php
-            $answer = DB::table('answers')
-            ->where('answer_from_question',$q->id)
-            ->get();
-        @endphp
-        <div class="row">
+        <div class="row mb-3">
+
             <div class="col-lg-12 col-md-12">
                 <div class="card">
-                    <div class="header">
 
-                    </div>
-
-                    <div class="body clearfix p-4">
+                    <div class="body clearfix p-4 mb-5">
                         <div class="row">
                             <div class="col-md-12">
                                 <tr>
                                     <td>
-                                        <img src="/foto_profile/{{$q->foto}}" width="40" height="40" alt="no-image" class="rounded">
+                                        <img src="{{ url('/') }}/foto_profile/{{ $kelas->createdBy->foto }}" width="40" height="40" alt="no-image" class="rounded">
                                     </td>
                                     <td>-</td>
-                                    <td> <strong>{{$q->name}}</strong></td>
-                                    <td> ({{$q->nama_kelas}})</td>
+                                    <td> <strong>{{$kelas->name}}</strong></td>
+                                    <td> ({{$kelas->nama_kelas}})</td>
                                 </tr>
-                                <?php if ($q->name == Auth::user()->name): ?>
+                                <?php if ($q->question_from == Auth::user()->id): ?>
                                 <div class="float-right">
                                     <a href="/question/{{$q->id}}/delete" onclick="return confirm('Yakin ingein menghapus ?')" class="btn btn-danger btn-sm"><i class="zmdi zmdi-delete zmdi-hc-lg"></i></a>
                                 </div>
@@ -107,7 +112,8 @@
                         <br>
                         <div class="row pl-3">
                             <div class="col-md-12">
-                                <span style="font-size: 11px;color:grey;" class="float-right"><strong>{{$q->created_at}}</strong> Komentar</span>
+                                <span style="font-size: 11px;color:grey;" class="float-right"><strong>{{$q->formatted_question_date_create}}</strong></span>
+                                <span>Komentar</span>
                             </div>
                         </div>
                         <hr>
@@ -116,31 +122,26 @@
                         </div>
 
 
-                        @foreach($answer as $r)
+                        @foreach($q->answers as $ans)
 
                             <div class="row pl-3 pt-2 alert-success">
                                 <div class="col-md-12">
                                     <div class="row">
-                                        <?php
-                                        $nama = DB::table('users')
-                                            ->where('id','=',$r->answer_from_user)
-                                            ->first();
-                                        ?>
                                         <tr>
-                                            <td><img src="/foto_profile/{{$nama->foto}}" width="20" height="20" alt="no-image" class="rounded"></td>
-                                            <td>  |  <strong>{{$nama->name}}</strong> | (<strong class="text-info">{{$r->percentage}}%</strong>) </td>
+                                            <td><img src="{{ url('/') }}/foto_profile/{{$ans->answerFromUser->foto}}" width="20" height="20" alt="no-image" class="rounded"></td>
+                                            <td>  |  <strong>{{$ans->answerFromUser->name}}</strong> | (<strong class="text-info">{{$ans->answer_persentase}}%</strong>) </td>
                                             <td> <strong><a href="" class="text-info"></a></strong></td>
                                         </tr>
                                     </div>
                                     <div class="row">
                                         <div class="col-md-12">
-                                            {{$r->answer_text}}
+                                            {{$ans->answer_text}}
                                         </div>
                                     </div>
 
                                     <div class="row pl-3">
                                         <div class="col-md-12">
-                                            <span style="font-size: 11px;color:grey;" class="float-right"><strong>{{$r->created_at}}</strong></span>
+                                            <span style="font-size: 11px;color:grey;" class="float-right"><strong>{{ $ans->formatted_answer_posted_date }}</strong></span>
                                         </div>
                                     </div>
 

@@ -4,26 +4,28 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Answer;
-use App\Traits\Vsm;
+use App\Services\Winnowing;
+
 class AnswerController extends Controller
 {
-	use Vsm;
+
+	private $winnowingService;
+
+	public function __construct()
+    {
+        $this->winnowingService = new Winnowing('kambing','kalimat 2');
+    }
 
     public function create(Request $request){
 
         $id_user = $request->user()->id;
-
-        $case = $this->case_folding($request->answer_text);
-        $token = $this->tokenizing($case);
-
-        // $this->stemming($case);
-
-        // for ($i=0; $i < count($token) ; $i++) {
-        // 	$this->stemming($token[$i]);
-        // }
-
-
-        // var_dump($token[0]);exit();
+        $id_question = $request->id_question;
+        $hasAnswer = Answer::where('answer_from_question', $id_question)
+            ->where('answer_from_user', $id_user)
+            ->first();
+        if ($hasAnswer){
+            return redirect()->back()->with('warning', 'Anda sudah pernah menjawab pertanyaan ini');
+        }
 
         Answer::create([
             'answer_text' => $request->answer_text,

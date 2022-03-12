@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Kelas;
+use App\Question;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -112,19 +113,22 @@ class KelasController extends Controller
 
 
         //================================//
-        $data['kelas'] = DB::table('kelas')
-            ->where('id','=',$id)
-            ->first();
+        $data['kelas'] = Kelas::with(['questions' => function($q){
+            $q->with(['questionFrom']);
+        },'createdBy'])
+            ->findOrFail($id);
         $data['breadcumb']= 'Kelas/View';
-        $data['question'] = DB::table('questions')
-            ->where('question_kelas_id',$id)
-            ->leftJoin('users','users.id','=','questions.question_from')
-            ->leftJoin('kelas','kelas.id','=','questions.question_kelas_id')
-            ->get();
+        $data['question'] = $data['kelas']
+            ->questions()
+            ->with(['answers' => function($q){
+                $q->with(['answerFromUser']);
+            }])->get();
+
+//        return response()->json($data['question']);
 
 //        var_dump($data['question']);exit();
-//        dd($data);
-        return view('kelas/view',$data);
+//        dd($data['question']);
+        return view('kelas/view', $data);
 
     }
 

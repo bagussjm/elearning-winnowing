@@ -40,4 +40,19 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    public function questions()
+    {
+        return $this->hasMany('App\Question', 'question_from', 'id');
+    }
+
+    public function kelas()
+    {
+        return $this->hasMany('App\Kelas', 'kelas_created_by', 'id');
+    }
+
+    public function answer()
+    {
+        return $this->hasMany('App\Answer','answer_from_user', 'id');
+    }
 }
