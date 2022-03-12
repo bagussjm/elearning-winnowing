@@ -117,6 +117,7 @@ class KelasController extends Controller
             $q->with(['questionFrom']);
         },'createdBy'])
             ->findOrFail($id);
+
         $data['breadcumb']= 'Kelas/View';
         $data['question'] = $data['kelas']
             ->questions()

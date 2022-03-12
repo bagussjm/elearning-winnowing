@@ -7,30 +7,46 @@
         </div>
     @endif
 
-    @php
-        use Illuminate\Support\Facades\DB;
-    @endphp
-
 
 <div class="row">
-    @if (\Illuminate\Support\Facades\Session::has('warning'))
-        <div class="col-12">
-            <div class="alert alert-warning">
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                    <span aria-hidden="true">×</span>
-                </button>
-                <strong>
-                    {{ \Illuminate\Support\Facades\Session::get('warning') }}
-                </strong>
+        @if (\Illuminate\Support\Facades\Session::has('warning'))
+            <div class="col-12">
+                <div class="alert alert-warning">
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                    <strong>
+                        {{ \Illuminate\Support\Facades\Session::get('warning') }}
+                    </strong>
+                </div>
             </div>
-        </div>
-    @endif
+        @endif
+        @if (\Illuminate\Support\Facades\Session::has('error'))
+            <div class="col-12">
+                <div class="alert alert-danger">
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                    <strong>
+                        {{ \Illuminate\Support\Facades\Session::get('error') }}
+                    </strong>
+                </div>
+            </div>
+        @endif
+        @if (\Illuminate\Support\Facades\Session::has('success'))
+            <div class="col-12">
+                <div class="alert alert-success">
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                    <strong>
+                        {{ \Illuminate\Support\Facades\Session::get('success') }}
+                    </strong>
+                </div>
+            </div>
+        @endif
     <div class="col-lg-12 col-md-12">
         <div class="card">
-{{--            <div class="header">--}}
-{{--                <h2><strong>Kelas</strong></h2>--}}
-{{--            </div>--}}
-
             <?php if (Auth::user()->level == 'dosen'): ?>
 
             <div class="body clearfix">
@@ -113,7 +129,7 @@
                         <div class="row pl-3">
                             <div class="col-md-12">
                                 <span style="font-size: 11px;color:grey;" class="float-right"><strong>{{$q->formatted_question_date_create}}</strong></span>
-                                <span>Komentar</span>
+{{--                                <span>Komentar</span>--}}
                             </div>
                         </div>
                         <hr>
@@ -126,12 +142,29 @@
 
                             <div class="row pl-3 pt-2 alert-success">
                                 <div class="col-md-12">
-                                    <div class="row">
-                                        <tr>
-                                            <td><img src="{{ url('/') }}/foto_profile/{{$ans->answerFromUser->foto}}" width="20" height="20" alt="no-image" class="rounded"></td>
-                                            <td>  |  <strong>{{$ans->answerFromUser->name}}</strong> | (<strong class="text-info">{{$ans->answer_persentase}}%</strong>) </td>
-                                            <td> <strong><a href="" class="text-info"></a></strong></td>
-                                        </tr>
+                                    <div class="d-flex justify-content-between">
+                                        <div class="row">
+                                            <img src="{{ url('/') }}/foto_profile/{{$ans->answerFromUser->foto}}"
+                                                 width="28" height="28" alt="no-image" class="rounded">
+                                            <div class="ml-2">
+                                                <strong>{{$ans->answerFromUser->name}}</strong> | (<strong class="text-info">{{$ans->answer_persentase}}%</strong>)
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <div class="btn-group dropleft">
+                                                <button type="button" class="btn btn-sm btn-primary dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                                                    <i class="zmdi zmdi-more-vert"></i>
+                                                </button>
+                                                <div class="dropdown-menu">
+                                                    <a class="dropdown-item" href="#">
+                                                        <i class="zmdi zmdi-edit"></i> edit
+                                                    </a>
+                                                    <a class="dropdown-item" href="#">
+                                                        <i class="zmdi zmdi-delete"></i> hapus
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                     <div class="row">
                                         <div class="col-md-12">

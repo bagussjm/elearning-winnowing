@@ -2,19 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Question;
 use Illuminate\Http\Request;
 use App\Answer;
 use App\Services\Winnowing;
+use Illuminate\Support\Facades\Log;
 
 class AnswerController extends Controller
 {
-
-	private $winnowingService;
-
-	public function __construct()
-    {
-        $this->winnowingService = new Winnowing('kambing','kalimat 2');
-    }
 
     public function create(Request $request){
 
@@ -27,14 +22,42 @@ class AnswerController extends Controller
             return redirect()->back()->with('warning', 'Anda sudah pernah menjawab pertanyaan ini');
         }
 
-        Answer::create([
-            'answer_text' => $request->answer_text,
-            'answer_from_question'=> $request->id_question,
-            'answer_from_user'=> $id_user
+        $answerPercentage = $this->processPercentage($request);
 
-        ]);
+        if ($answerPercentage !== null){
+            Answer::create([
+                'answer_text' => $request->answer_text,
+                'answer_from_question'=> $request->id_question,
+                'answer_from_user'=> $id_user,
+                'answer_persentase' => $answerPercentage
+            ]);
 
-        return redirect('dashboard');
+            return back()->with('success', 'Berhasil mengirimkan komentar');
+        }
+
+        return redirect()->back()->with('error', 'Ada masalah saat mengirimkan komentar');
+
+    }
+
+    private function processPercentage(Request $request)
+    {
+        try{
+            $question = Question::findOrFail($request->id_question);
+            $winnowingObj = new Winnowing($question->question_answer, $request->answer_text);
+
+            $winnowingObj->SetPrimeNumber(env('WINNOWING_PRIME'));
+            $winnowingObj->SetNGramValue(env('WINNOWING_N_GRAM'));
+            $winnowingObj->SetNWindowValue(env('WINNOWING_WINDOW_VALUE'));
+
+            $winnowingObj->process();
+
+            return round($winnowingObj->GetJaccardCoefficient(), 0);
+
+        }catch (\Exception $exception){
+            Log::error($exception->getMessage());
+            return null;
+        }
+
     }
 
 }
