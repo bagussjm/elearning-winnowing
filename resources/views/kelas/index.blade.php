@@ -11,7 +11,7 @@
             <div class="col-lg-12 col-md-12">
                 <div class="card">
                     <div class="header">
-                        <h2><strong>List Kelas</strong></h2>
+                        <h2><strong>List Kelas Test Update</strong></h2>
                     </div>
                     <div class="body">
                         <?php if (Auth::user()->level == 'dosen'): ?>
